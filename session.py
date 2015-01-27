@@ -22,7 +22,7 @@ class TorrentSession(GObject.GObject):
                          save,
                          storage_mode=lt.storage_mode_t.storage_mode_sparse)
         torrent_handle.set_sequential_download(True)
-        torrent_handle.auto_managed(False) 
+        #torrent_handle.auto_managed(False)
         return torrent_handle
 
 
