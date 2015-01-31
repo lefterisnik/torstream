@@ -287,22 +287,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolButton" id="toolbar_stop_torrent">
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
-                <property name="label" translatable="yes">Διακοπή</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-media-stop</property>
-                <signal name="clicked" handler="on_toolbar_stop_torrent_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkSeparatorToolItem" id="toolbar_seperator3">
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
@@ -435,7 +419,7 @@
                                 <property name="title" translatable="yes">Ταχύτητα αποστολής</property>
                                 <property name="clickable">True</property>
                                 <property name="reorderable">True</property>
-                                <property name="sort_column_id">3</property>                                
+                                <property name="sort_column_id">3</property>
                                 <child>
                                   <object class="GtkCellRendererText" id="crt_up"/>
                                   <attributes>

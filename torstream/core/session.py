@@ -25,6 +25,11 @@ class TorrentSession(GObject.GObject):
         #torrent_handle.auto_managed(False)
         return torrent_handle
 
+    def remove_torrent(self, torrent_handle, delete=False):
+        if delete:
+            self.session.remove_torrent(torrent_handle, 1)
+        else:
+            self.session.remove_torrent(torrent_handle)
 
     def run(self):
         alert = self.session.pop_alert()

@@ -55,6 +55,10 @@ class TorrentGui:
         self.popup.append(self.play)
         self.popup.append(self.open_folder)
 
+        ## Popup menu callback
+        self.play.connect('activate', self.on_play_activate)
+        self.open_folder.connect('activate', self.on_open_folder_activate)
+
         self.window.show_all()
    
     def populate_treeview(self, torrent_handle):
@@ -129,22 +133,26 @@ class TorrentGui:
             time = event.time
             pthinfo = self.treeview_torrent.get_path_at_pos(x, y)
             if pthinfo is not None:
-                #TODO: continue add callbacks with the result to open multiple instances of vlc or nautilus
                 path, col, cellx, celly = pthinfo
                 self.treeview_torrent.grab_focus()
-                self.treeview_torrent.set_cursor( path, col, 0)
-                self.play.connect('activate', self.on_play_activate, path)
-                self.open_folder.connect('activate', self.on_open_folder_activate, path)
                 self.popup.popup( None, None, None, None, event.button, time)
                 self.popup.show_all()
             return True
 
     ## Main Menu Callbacks
-    def on_play_activate(self, widget, path):
-        stream.Stream().load_media(self.liststore_torrent[path][8])
+    def on_play_activate(self, widget):
+        treeselection = self.treeview_torrent.get_selection()
+        treemodel, iter = treeselection.get_selected()
+        if iter:
+            path = treemodel.get_path(iter)
+            stream.Stream().load_media(self.liststore_torrent[path][8])
 
-    def on_open_folder_activate(self, widget, path):
-        subprocess.Popen(['nautilus', self.liststore_torrent[path][8]])
+    def on_open_folder_activate(self, widget):
+        treeselection = self.treeview_torrent.get_selection()
+        treemodel, iter = treeselection.get_selected()
+        if iter:
+            path = treemodel.get_path(iter)
+            subprocess.Popen(['nautilus', self.liststore_torrent[path][8]])
 
     ## Main Toolbar Callbacks
     def on_toolbar_torrent_properties_clicked(self, widget):
@@ -165,9 +173,6 @@ class TorrentGui:
             path = treemodel.get_path(iter)
             self.liststore_torrent[path][0].torrent_handle.pause()
 
-    def on_toolbar_stop_torrent_clicked(self, widget):
-        pass
-
     def on_toolbar_remove_torrent_clicked(self, widget):
         treeselection = self.treeview_torrent.get_selection()
         treemodel, iter = treeselection.get_selected()
@@ -182,11 +187,9 @@ class TorrentGui:
 
             remove = dialogs.RemoveTorrent(message_format='Είστε σίγουροι ότι θέλετε να προχωρήσετε στην αφαίρεση των μεταφορτομένων αρχείων;').showup()
             if remove:
-                #TODO: move to session.py
-                self.session.session.remove_torrent(torrent_handle, 1)
+                self.session.remove_torrent(torrent_handle, True)
             else:
-                #TODO: move to session.py
-                self.session.session.remove_torrent(torrent_handle)
+                self.session.remove_torrent(torrent_handle)
 
     def on_toolbar_add_torrent_clicked(self, widget):
         torrent = dialogs.Chooser("Επιλογή αρχείου...", self.window).showup()
@@ -196,7 +199,7 @@ class TorrentGui:
                                 self.window, 
                                 Gtk.FileChooserAction.SELECT_FOLDER).showup()
         if save is not None:
-            # dont forget logging
+            logging.info("Save folder: %s" %(save))
             self.populate_treeview(self.session.add_torrent(torrent, save))
         return
 
